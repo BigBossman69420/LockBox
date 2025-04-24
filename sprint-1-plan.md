@@ -4,7 +4,7 @@
 Implement the basic user registration and login functionality.
 
 ## Sprint Duration
-1 week (May 5 - May 12, 2025)
+1 week (May 1 - May 8, 2025)
 
 ## Selected User Stories
 1. **User Registration** (HIGH)
