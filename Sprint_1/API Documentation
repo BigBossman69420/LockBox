@@ -1,0 +1,90 @@
+# LockBox Backend API
+
+## Project Overview
+LockBox is a secure password manager web application. The backend API handles user registration, login, and connects to a MongoDB database for user data storage. This README provides documentation for the API endpoints, including setup instructions, expected responses, and error handling.
+
+## API Documentation
+
+### POST /register
+- **Description:** Registers a new user.
+- **Request Body:**
+  ```json
+  {
+    "username": "string",   // The user's username (min 3 characters)
+    "email": "string",      // The user's email (must be a valid email format)
+    "password": "string"    // The user's password (min 6 characters)
+  }
+Responses:
+
+Success (201 Created):
+
+json
+Copy
+Edit
+{
+  "message": "User registered successfully!"
+}
+Error (400 Bad Request):
+
+If email already exists:
+
+json
+Copy
+Edit
+{
+  "message": "User already exists!"
+}
+If validation fails:
+
+json
+Copy
+Edit
+{
+  "errors": [
+    {
+      "msg": "Username must be at least 3 characters long",
+      "param": "username",
+      "location": "body"
+    }
+  ]
+}
+POST /login
+Description: Logs in a user with email and password.
+
+Request Body:
+
+json
+Copy
+Edit
+{
+  "email": "string",      // The user's email
+  "password": "string"    // The user's password
+}
+Responses:
+
+Success (200 OK):
+
+json
+Copy
+Edit
+{
+  "message": "Login successful!"
+}
+Error (400 Bad Request):
+
+If user is not found:
+
+json
+Copy
+Edit
+{
+  "message": "User not found!"
+}
+If password is incorrect:
+
+json
+Copy
+Edit
+{
+  "message": "Invalid credentials!"
+}
