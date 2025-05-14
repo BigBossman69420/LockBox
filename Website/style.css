@@ -1,0 +1,161 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background-color: #1e1e2f;
+  color: white;
+  padding: 1rem 2rem;
+}
+
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-links a {
+  color: white;
+  margin-left: 1rem;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.logo a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.hero{
+    margin-top: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 100px;
+    /*background-image: url(vault.jpg);*/
+    
+}
+.hero-main{
+    flex-direction: column;
+    padding: 10px;
+    width: 50%;
+    text-align: center;
+    
+}
+.hero-main h1{
+    font-size: 40px;
+    padding-bottom: 30px;
+    text-align: center;
+}
+.hero-main p{
+    font-size: 20px;
+    padding-bottom: 20px;
+}
+.hero-main a{
+    text-decoration: none;
+    padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: transparent;
+  color: #3498db; /* Blue text color */
+  border: 3px solid #3498db; /* Blue border */
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  
+}
+#LockBox-Image {
+    max-width: 100%;
+    height: auto;
+    margin-left: 20px;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Force exactly 2 columns */
+    gap: 30px;
+    padding: 40px 20px;
+    max-width: 1000px;
+    margin: 100px auto;
+    text-align: center;
+    background-color: #fafafa;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+  }
+  .feature h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .feature p {
+    font-size: 16px;
+    color: #555;
+  }
+
+footer {
+  background-color: #1e1e2f;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+footer a {
+  color: #007BFF;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .navBar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    margin-top: 10px;
+  }
+
+  .hero {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .hero-main,
+  .hero img {
+    width: 100%;
+    text-align: center;
+  }
+
+  .features1,
+  .features2 {
+    flex-direction: column;
+  }
+
+  .feature {
+    margin-bottom: 20px;
+  }
+}
+
+.hero-main a:hover {
+  background-color: #3498db;
+  color: white;
+}

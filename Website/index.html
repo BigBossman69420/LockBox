@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale = 1.0" />
+    <title>LockBox</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <header>
+        <nav class="navBar">
+            <div class="logo"><a href="index.html">🔒LockBox</a> </div>
+            <div class="nav-links">
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+            </div>
+        </nav>
+    </header>
+    <section class="hero">
+
+
+        <div class="hero-main">
+            <h1>Secure your passwords. Access them from anywhere.</h1>
+            <p>LockBox is your personal password manager - safe, fast and simple.</p>
+            <a id="getStartedBtn" href="/register.html">Get Started</a>
+            <br><br>
+
+        </div>
+        <div>
+            <img src="LockBox.webp" id="LockBox-Image" alt="LockBox Image">
+        </div>
+    </section>
+    
+        <section class="features">
+            <div class="feature">
+              <h3>🔐 Encrypted Storage</h3>
+              <p>Your passwords are protected with end-to-end encryption.</p>
+            </div>
+            <div class="feature">
+              <h3>☁️ Cloud Access</h3>
+              <p>Access your vault from any device, anytime.</p>
+            </div>
+            <div class="feature">
+              <h3>⚡ One-Click Autofill</h3>
+              <p>Fast login experience with one-click autofill.</p>
+            </div>
+            <div class="feature">
+              <h3>🛡️ Private & Open</h3>
+              <p>Your data, your rules — open-source and secure.</p>
+            </div>
+          </section>
+  
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 LockBox. All rights reserved.</p>
+        <p><a href="#">Contact Us</a> | <a href="#">Privacy Policy</a></p>
+    </footer>
+    <script>
+  // Check login state from localStorage
+  window.addEventListener('DOMContentLoaded', () => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (isLoggedIn) {
+      // Replace nav links with Logout
+      const navLinks = document.querySelector('.nav-links');
+      navLinks.innerHTML = '<a href="#" id="logoutBtn">Logout</a>';
+
+      // Update "Get Started" button if it exists
+      const getStartedBtn = document.getElementById('getStartedBtn');
+      if (getStartedBtn) {
+        getStartedBtn.textContent = 'Thank you!';
+        getStartedBtn.href = '#';
+        getStartedBtn.style.pointerEvents = 'none';
+        getStartedBtn.style.opacity = '0.6';
+      }
+    }
+  });
+
+  // Logout handler
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'logoutBtn') {
+      localStorage.removeItem('isLoggedIn');
+      window.location.reload();
+    }
+  });
+</script>
+</body>
+
+</html>
