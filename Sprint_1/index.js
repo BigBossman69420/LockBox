@@ -1,5 +1,5 @@
 // Load environment variables
-require('dotenv').config({ path: './.env' });
+require('dotenv').config();
 
 // Core dependencies
 const { encrypt, decrypt } = require('./utils/encryption.js');
@@ -35,7 +35,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/lockbox', {
 .then(() => console.log('✅ Connected to MongoDB'))
 .catch((err) => console.error('❌ MongoDB connection error:', err));
 
-// Register Route
 app.post(
   '/register',
   body('username').isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
@@ -47,15 +46,7 @@ app.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const updated = await Credential.findOneAndUpdate(
-  { _id: credentialId, userId: req.user.id },
-  {
-    site,
-    username,
-    password: encrypt(password), // 🔐 Encrypt again
-  },
-  { new: true }
-);
+    const { username, email, password } = req.body;
 
     try {
       const existingUser = await User.findOne({ email });
@@ -162,9 +153,11 @@ app.put('/credentials/:id', authenticate, async (req, res) => {
   const { site, username, password } = req.body;
 
   try {
+    const encryptedPassword = encrypt(password); // Encrypt before update
+
     const updated = await Credential.findOneAndUpdate(
       { _id: credentialId, userId: req.user.id },
-      { site, username, password },
+      { site, username, password: encryptedPassword },
       { new: true }
     );
 
