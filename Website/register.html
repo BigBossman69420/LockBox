@@ -40,34 +40,41 @@
   </footer>
 
   <script>
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-  window.location.href = '/'; // already logged in
-}
-    document.getElementById('registerForm').addEventListener('submit', async function (e) {
-      e.preventDefault(); // Stop form submission
+  // Redirect if already logged in
+  if (localStorage.getItem('isLoggedIn') === 'true') {
+    window.location.href = '/'; // already logged in
+  }
 
-      const username = document.getElementById('username').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
+  document.getElementById('registerForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Stop form submission
 
-      const response = await fetch('/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
-      });
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-      const result = await response.json();
-      const messageElem = document.getElementById('message');
-
-      if (response.ok) {
-        messageElem.style.color = 'green';
-        messageElem.textContent = result.message;
-        document.getElementById('registerForm').reset(); // Clear form
-      } else {
-        messageElem.style.color = 'red';
-        messageElem.textContent = result.message || result.errors?.[0]?.msg || 'Registration failed.';
-      }
+    const response = await fetch('/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password }),
     });
-  </script>
+
+    const result = await response.json();
+    const messageElem = document.getElementById('message');
+
+    if (response.ok) {
+      messageElem.style.color = 'green';
+      messageElem.textContent = result.message;
+      document.getElementById('registerForm').reset(); // Clear form
+
+      // ✅ Redirect to login after 1.5 seconds
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 1500);
+    } else {
+      messageElem.style.color = 'red';
+      messageElem.textContent = result.message || result.errors?.[0]?.msg || 'Registration failed.';
+    }
+  });
+</script>
 </body>
 </html>

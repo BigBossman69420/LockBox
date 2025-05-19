@@ -66,7 +66,11 @@
     if (isLoggedIn) {
       // Replace nav links with Logout
       const navLinks = document.querySelector('.nav-links');
-      navLinks.innerHTML = '<a href="#" id="logoutBtn">Logout</a>';
+    navLinks.innerHTML = `
+      <a href="/vault.html" id="vaultBtn">Vault</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    `;
+      
 
       // Update "Get Started" button if it exists
       const getStartedBtn = document.getElementById('getStartedBtn');

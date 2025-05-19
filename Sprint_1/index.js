@@ -1,50 +1,41 @@
-require('dotenv').config({ path: './Secret.env' }); // ✅ Load .env variables first
+// Load environment variables
+require('dotenv').config({ path: './.env' });
 
+// Core dependencies
+const { encrypt, decrypt } = require('./utils/encryption.js');
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const path = require('path');
 const cors = require('cors');
+
+// Models & Middleware
 const User = require('./models/user.js');
-const jwt = require('jsonwebtoken');
+const Credential = require('./models/credential.js');
+const authenticate = require('./middleware/authenticate.js');
 
-const JWT_SECRET = process.env.JWT_SECRET; // ✅ Secret now from env
-
+// Config
 const app = express();
+const PORT = 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-
-// Serve static files from the Website folder
 app.use(express.static(path.join(__dirname, '../Website')));
 
-// Connect to MongoDB
-mongoose
-  .connect('mongodb://127.0.0.1:27017/lockbox', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+// MongoDB Connection
+mongoose.connect('mongodb://127.0.0.1:27017/lockbox', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ Connected to MongoDB'))
+.catch((err) => console.error('❌ MongoDB connection error:', err));
 
-// ✅ JWT middleware
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
-// Registration route
+// Register Route
 app.post(
   '/register',
   body('username').isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
@@ -56,7 +47,15 @@ app.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, email, password } = req.body;
+    const updated = await Credential.findOneAndUpdate(
+  { _id: credentialId, userId: req.user.id },
+  {
+    site,
+    username,
+    password: encrypt(password), // 🔐 Encrypt again
+  },
+  { new: true }
+);
 
     try {
       const existingUser = await User.findOne({ email });
@@ -76,48 +75,116 @@ app.post(
   }
 );
 
-// Login route
+// Login Route
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(400).json({ message: 'User not found!' });
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: 'User not found!' });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials!' });
+
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ message: 'Login successful!', token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) {
-    return res.status(400).json({ message: 'Invalid credentials!' });
-  }
-
-  const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
-    expiresIn: '1h',
-  });
-
-  res.status(200).json({
-    message: 'Login successful!',
-    token,
-  });
 });
 
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+// Get Credentials (Vault)
+app.get('/vault', authenticate, async (req, res) => {
+  try {
+    const credentials = await Credential.find({ userId: req.user.id });
 
-  if (!token) return res.sendStatus(401); // No token
+    const decryptedCredentials = credentials.map(cred => ({
+      _id: cred._id,
+      site: cred.site,
+      username: cred.username,
+      password: decrypt(cred.password), // 🔓 Decrypt password
+    }));
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403); // Invalid token
-    req.user = user; // Attach user to request
-    next();
-  });
-}
+    res.json(decryptedCredentials);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching credentials' });
+  }
+});
+// Add Credential
+app.post('/credentials', authenticate, async (req, res) => {
+  const { site, username, password } = req.body;
 
-// Example protected route
-app.get('/api/protected', authenticateToken, (req, res) => {
+  if (!site || !username || !password) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  try {
+    const encryptedPassword = encrypt(password); // 🔐 Encrypt password
+
+    const newCredential = new Credential({
+      site,
+      username,
+      password: encryptedPassword,
+      userId: req.user.id,
+    });
+
+    await newCredential.save();
+    res.status(201).json({ message: 'Credential added successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+app.delete('/credentials/:id', authenticate, async (req, res) => {
+  const credentialId = req.params.id;
+
+  try {
+    const deleted = await Credential.findOneAndDelete({
+      _id: credentialId,
+      userId: req.user.id,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: 'Credential not found or unauthorized' });
+    }
+
+    res.json({ message: 'Credential deleted successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+app.put('/credentials/:id', authenticate, async (req, res) => {
+  const credentialId = req.params.id;
+  const { site, username, password } = req.body;
+
+  try {
+    const updated = await Credential.findOneAndUpdate(
+      { _id: credentialId, userId: req.user.id },
+      { site, username, password },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Credential not found or unauthorized' });
+    }
+
+    res.json({ message: 'Credential updated successfully.', credential: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+// Protected Example Route
+app.get('/api/protected', authenticate, (req, res) => {
   res.json({ message: 'This is protected data!', user: req.user });
 });
-// Start server
-app.listen(3000, () => {
-  console.log('Server is running at http://localhost:3000');
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running at http://localhost:${PORT}`);
 });

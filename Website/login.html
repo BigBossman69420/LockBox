@@ -38,9 +38,11 @@
   </footer>
 
   <script>
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-  window.location.href = '/'; // already logged in
-}
+  // If already logged in, redirect to vault
+  if (localStorage.getItem('isLoggedIn') === 'true') {
+    window.location.href = '/vault.html';
+  }
+
   document.getElementById('loginBtn').addEventListener('click', async function (e) {
     e.preventDefault();
 
@@ -56,23 +58,24 @@
     });
 
     const result = await response.json();
-
     const messageElem = document.getElementById('loginMessage');
     messageElem.style.display = 'block';
 
-   if (response.ok) {
-  messageElem.textContent = result.message;
-  messageElem.className = 'login-message success';
+    if (response.ok && result.token) {
+      // ✅ Save token and mark user as logged in
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('isLoggedIn', 'true');
 
-  localStorage.setItem('isLoggedIn', 'true'); // mark as logged in
-  window.location.href = '/'; // redirect to homepage
-} else {
-  messageElem.textContent = result.message || 'Login failed';
-  messageElem.className = 'login-message error';
-}
-localStorage.setItem('token', result.token);
-localStorage.setItem('isLoggedIn', 'true');
-window.location.href = '/';
+      messageElem.textContent = result.message;
+      messageElem.className = 'login-message success';
+
+      // ✅ Redirect to vault
+      window.location.href = '/vault.html';
+    } else {
+      // ❌ Show error message
+      messageElem.textContent = result.message || 'Login failed';
+      messageElem.className = 'login-message error';
+    }
   });
 </script>
 </body>

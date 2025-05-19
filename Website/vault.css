@@ -1,0 +1,134 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-image: url('Vault.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  backdrop-filter: blur(3px);
+}
+
+/* Overall layout */
+header {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 1rem 2rem;
+  color: white;
+}
+
+.navBar .logo a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Vault Controls */
+.vault-controls {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.vault-controls h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+#addCredentialForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#addCredentialForm input {
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+#addCredentialForm input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+#addCredentialForm button {
+  padding: 0.8rem;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#addCredentialForm button:hover {
+  background-color: #0056b3;
+}
+.credentials-list {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: rgba(0, 0, 50, 0.6);
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+  color: #fff;
+}
+
+.credentials-list h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #00ccff;
+}
+
+.credential-item {
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.credential-item:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.credential-details {
+  flex-grow: 1;
+}
+
+.credential-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.credential-actions button {
+  background-color: #00ccff;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.credential-actions button:hover {
+  background-color: #0099cc;
+}
