@@ -177,6 +177,24 @@ app.get('/api/protected', authenticate, (req, res) => {
   res.json({ message: 'This is protected data!', user: req.user });
 });
 
+function generatePassword(length = 12) {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    password += charset[randomIndex];
+  }
+  return password;
+}
+
+// Password Generator
+// GET /generate-password?length=16
+app.get('/generate-password', authenticate, (req, res) => {
+  const { length = 12 } = req.query;
+  const pwd = generatePassword(parseInt(length, 10));
+  res.json({ password: pwd });
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);
